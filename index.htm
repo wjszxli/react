@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        #digit {
+            width: 0.5em;
+            overflow: hidden;
+            font: 32px monospace;
+            cursor: pointer;
+        }
+
+        #stripe {
+            display: inline-block;
+        }
+
+        #stripe.animate {
+            transform: translate(-90%);
+            transition-property: transform;
+            transition-duration: 9s;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="digit">
+        <div id="stripe">0123456789</div>
+    </div>
+    <script>
+        const stripe = document.querySelector('#stripe');
+        console.log(stripe)
+        stripe.onclick = function (e) {
+            let sec = new Date().getSeconds() % 10
+            stripe.style.transitionDelay = `-${sec}s`
+            stripe.classList.add('animate')
+        }
+    </script>
+</body>
+
+</html>
