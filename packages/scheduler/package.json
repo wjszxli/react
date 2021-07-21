@@ -12,6 +12,9 @@
   "keywords": [
     "react"
   ],
+  "scripts": {
+    "test": "npx --node-arg=--inspect-brk jest -i ./src/__tests__/Scheduler-test.js"
+  },
   "bugs": {
     "url": "https://github.com/facebook/react/issues"
   },

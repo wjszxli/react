@@ -471,12 +471,15 @@ function getListener(inst: Fiber, registrationName: string) {
     // Work in progress (ex: onload events in incremental mode).
     return null;
   }
+  // 获取 dom 节点对应的 fiber 节点上的 props
   const props = getFiberCurrentPropsFromNode(stateNode);
   if (!props) {
     // Work in progress.
     return null;
   }
+  // 获取同名的事件回调函数
   const listener = props[registrationName];
+  console.log('listener', listener);
   if (shouldPreventMouseEvent(registrationName, inst.type, props)) {
     return null;
   }

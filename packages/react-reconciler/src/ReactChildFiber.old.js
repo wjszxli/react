@@ -7,13 +7,24 @@
  * @flow
  */
 
-import type { ReactElement } from 'shared/ReactElementType';
-import type { ReactPortal } from 'shared/ReactTypes';
-import type { Fiber } from './ReactInternalTypes';
-import type { Lanes } from './ReactFiberLane.old';
+import type {
+  ReactElement
+} from 'shared/ReactElementType';
+import type {
+  ReactPortal
+} from 'shared/ReactTypes';
+import type {
+  Fiber
+} from './ReactInternalTypes';
+import type {
+  Lanes
+} from './ReactFiberLane.old';
 
 import getComponentNameFromFiber from 'react-reconciler/src/getComponentNameFromFiber';
-import { Placement, ChildDeletion } from './ReactFiberFlags';
+import {
+  Placement,
+  ChildDeletion
+} from './ReactFiberFlags';
 import {
   getIteratorFn,
   REACT_ELEMENT_TYPE,
@@ -45,16 +56,22 @@ import {
   createFiberFromText,
   createFiberFromPortal,
 } from './ReactFiber.old';
-import { emptyRefsObject } from './ReactFiberClassComponent.old';
-import { isCompatibleFamilyForHotReloading } from './ReactFiberHotReloading.old';
-import { StrictLegacyMode } from './ReactTypeOfMode';
+import {
+  emptyRefsObject
+} from './ReactFiberClassComponent.old';
+import {
+  isCompatibleFamilyForHotReloading
+} from './ReactFiberHotReloading.old';
+import {
+  StrictLegacyMode
+} from './ReactTypeOfMode';
 
 let didWarnAboutMaps;
 let didWarnAboutGenerators;
 let didWarnAboutStringRefs;
 let ownerHasKeyUseWarning;
 let ownerHasFunctionTypeWarning;
-let warnForMissingKey = (child: mixed, returnFiber: Fiber) => { };
+let warnForMissingKey = (child: mixed, returnFiber: Fiber) => {};
 
 if (__DEV__) {
   didWarnAboutMaps = false;
@@ -83,7 +100,8 @@ if (__DEV__) {
     );
     child._store.validated = true;
 
-    const componentName = getComponentNameFromFiber(returnFiber) || 'Component';
+    const componentName = getComponentNameFromFiber(returnFiber) ||
+      'Component';
 
     if (ownerHasKeyUseWarning[componentName]) {
       return;
@@ -152,7 +170,7 @@ function coerceRef(
     }
 
     if (element._owner) {
-      const owner: ?Fiber = (element._owner: any);
+      const owner: ? Fiber = (element._owner: any);
       let inst;
       if (owner) {
         const ownerFiber = ((owner: any): Fiber);
@@ -222,9 +240,9 @@ function throwOnInvalidObjectType(returnFiber: Fiber, newChild: Object) {
     'Objects are not valid as a React child (found: %s). ' +
     'If you meant to render a collection of children, use an array ' +
     'instead.',
-    childString === '[object Object]'
-      ? 'object with keys {' + Object.keys(newChild).join(', ') + '}'
-      : childString,
+    childString === '[object Object]' ?
+    'object with keys {' + Object.keys(newChild).join(', ') + '}' :
+    childString,
   );
 }
 
@@ -294,11 +312,11 @@ function ChildReconciler(shouldTrackSideEffects) {
   function mapRemainingChildren(
     returnFiber: Fiber,
     currentFirstChild: Fiber,
-  ): Map<string | number, Fiber> {
+  ): Map < string | number, Fiber > {
     // Add the remaining children to a temporary map so that we can find them by
     // keys quickly. Implicit (null) keys get added to this set with their index
     // instead.
-    const existingChildren: Map<string | number, Fiber> = new Map();
+    const existingChildren: Map < string | number, Fiber > = new Map();
 
     let existingChild = currentFirstChild;
     while (existingChild !== null) {
@@ -400,9 +418,9 @@ function ChildReconciler(shouldTrackSideEffects) {
       if (
         current.elementType === elementType ||
         // Keep this check inline so it only runs on the false path:
-        (__DEV__
-          ? isCompatibleFamilyForHotReloading(current, element)
-          : false) ||
+        (__DEV__ ?
+          isCompatibleFamilyForHotReloading(current, element) :
+          false) ||
         // Lazy types should reconcile their resolved type.
         // We need to do this after the Hot Reloading check above,
         // because hot reloading has different semantics than prod because
@@ -458,7 +476,7 @@ function ChildReconciler(shouldTrackSideEffects) {
   function updateFragment(
     returnFiber: Fiber,
     current: Fiber | null,
-    fragment: Iterable<*>,
+    fragment: Iterable < * > ,
     lanes: Lanes,
     key: null | string,
   ): Fiber {
@@ -617,7 +635,7 @@ function ChildReconciler(shouldTrackSideEffects) {
   }
 
   function updateFromMap(
-    existingChildren: Map<string | number, Fiber>,
+    existingChildren: Map < string | number, Fiber > ,
     returnFiber: Fiber,
     newIdx: number,
     newChild: any,
@@ -662,7 +680,8 @@ function ChildReconciler(shouldTrackSideEffects) {
 
       if (isArray(newChild) || getIteratorFn(newChild)) {
         const matchedFiber = existingChildren.get(newIdx) || null;
-        return updateFragment(returnFiber, matchedFiber, newChild, lanes, null);
+        return updateFragment(returnFiber, matchedFiber, newChild, lanes,
+          null);
       }
 
       throwOnInvalidObjectType(returnFiber, newChild);
@@ -682,9 +701,9 @@ function ChildReconciler(shouldTrackSideEffects) {
    */
   function warnOnInvalidKey(
     child: mixed,
-    knownKeys: Set<string> | null,
+    knownKeys: Set < string > | null,
     returnFiber: Fiber,
-  ): Set<string> | null {
+  ): Set < string > | null {
     if (__DEV__) {
       if (typeof child !== 'object' || child === null) {
         return knownKeys;
@@ -722,10 +741,10 @@ function ChildReconciler(shouldTrackSideEffects) {
             warnOnInvalidKey(init(payload), knownKeys, returnFiber);
             break;
           }
-        // We intentionally fallthrough here if enableLazyElements is not on.
-        // eslint-disable-next-lined no-fallthrough
-        default:
-          break;
+          // We intentionally fallthrough here if enableLazyElements is not on.
+          // eslint-disable-next-lined no-fallthrough
+          default:
+            break;
       }
     }
     return knownKeys;
@@ -735,7 +754,7 @@ function ChildReconciler(shouldTrackSideEffects) {
   function reconcileChildrenArray(
     returnFiber: Fiber,
     currentFirstChild: Fiber | null,
-    newChildren: Array<*>,
+    newChildren: Array < * > ,
     lanes: Lanes,
   ): Fiber | null {
     // This algorithm can't optimize by searching from both ends since we
@@ -890,7 +909,7 @@ function ChildReconciler(shouldTrackSideEffects) {
   function reconcileChildrenIterator(
     returnFiber: Fiber,
     currentFirstChild: Fiber | null,
-    newChildrenIterable: Iterable<*>,
+    newChildrenIterable: Iterable < * > ,
     lanes: Lanes,
   ): Fiber | null {
     // This is the same implementation as reconcileChildrenArray(),
@@ -948,7 +967,8 @@ function ChildReconciler(shouldTrackSideEffects) {
     }
 
     const newChildren = iteratorFn.call(newChildrenIterable);
-    invariant(newChildren != null, 'An iterable object provided no iterator.');
+    invariant(newChildren != null,
+      'An iterable object provided no iterator.');
 
     let resultingFirstChild: Fiber | null = null;
     let previousNewFiber: Fiber | null = null;
@@ -959,11 +979,8 @@ function ChildReconciler(shouldTrackSideEffects) {
     let nextOldFiber = null;
 
     let step = newChildren.next();
-    for (
-      ;
-      oldFiber !== null && !step.done;
-      newIdx++, step = newChildren.next()
-    ) {
+    for (; oldFiber !== null && !step.done; newIdx++, step = newChildren
+      .next()) {
       if (oldFiber.index > newIdx) {
         nextOldFiber = oldFiber;
         oldFiber = null;
@@ -1124,9 +1141,9 @@ function ChildReconciler(shouldTrackSideEffects) {
           if (
             child.elementType === elementType ||
             // Keep this check inline so it only runs on the false path:
-            (__DEV__
-              ? isCompatibleFamilyForHotReloading(child, element)
-              : false) ||
+            (__DEV__ ?
+              isCompatibleFamilyForHotReloading(child, element) :
+              false) ||
             // Lazy types should reconcile their resolved type.
             // We need to do this after the Hot Reloading check above,
             // because hot reloading has different semantics than prod because
@@ -1213,12 +1230,14 @@ function ChildReconciler(shouldTrackSideEffects) {
   // This API will tag the children with the side-effect of the reconciliation
   // itself. They will be added to the side-effect list as we pass through the
   // children and the parent.
+  // 逻辑分发器
   function reconcileChildFibers(
     returnFiber: Fiber,
     currentFirstChild: Fiber | null,
     newChild: any,
     lanes: Lanes,
   ): Fiber | null {
+    // 读取入参后，经过一系列的条件判断，调用上方所定义的负责具体节点操作的那个函数
     // This function is not recursive.
     // If the top level item is an array, we treat it as a set of children,
     // not as a fragment. Nested arrays on the other hand will be treated as

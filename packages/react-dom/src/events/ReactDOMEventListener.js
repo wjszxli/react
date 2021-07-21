@@ -87,14 +87,17 @@ export function createEventListenerWrapperWithPriority(
   const eventPriority = getEventPriority(domEventName);
   let listenerWrapper;
   switch (eventPriority) {
+    // 离散的事件
     case DiscreteEventPriority:
       listenerWrapper = dispatchDiscreteEvent;
       break;
+    // 连续的事件
     case ContinuousEventPriority:
       listenerWrapper = dispatchContinuousEvent;
       break;
     case DefaultEventPriority:
     default:
+      // 默认的事件处理
       listenerWrapper = dispatchEvent;
       break;
   }

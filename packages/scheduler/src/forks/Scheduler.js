@@ -294,11 +294,16 @@ function unstable_wrapCallback(callback) {
 }
 
 function unstable_scheduleCallback(priorityLevel, callback, options) {
+  // 获取当前时间
   var currentTime = getCurrentTime();
 
+  // 声明 startTime,是任务的预期开始时间
   var startTime;
+  // 对 options 入参的处理
   if (typeof options === 'object' && options !== null) {
     var delay = options.delay;
+
+    // 若入参规定了延迟的时间，则累加延迟时间
     if (typeof delay === 'number' && delay > 0) {
       startTime = currentTime + delay;
     } else {
@@ -308,7 +313,9 @@ function unstable_scheduleCallback(priorityLevel, callback, options) {
     startTime = currentTime;
   }
 
+  // timeout 是 expirationTime 的计算依据
   var timeout;
+  // 根据 priorityLevel 确定 timeout 的值
   switch (priorityLevel) {
     case ImmediatePriority:
       timeout = IMMEDIATE_PRIORITY_TIMEOUT;
@@ -328,8 +335,10 @@ function unstable_scheduleCallback(priorityLevel, callback, options) {
       break;
   }
 
+  // 优先级越高，timeout 越小，expirationTime 越小
   var expirationTime = startTime + timeout;
 
+  // 创建 task 对象
   var newTask = {
     id: taskIdCounter++,
     callback,
@@ -342,10 +351,13 @@ function unstable_scheduleCallback(priorityLevel, callback, options) {
     newTask.isQueued = false;
   }
 
+  // 如果当前时间小于开始时间，说明这任务可延迟执行（没有过期）
   if (startTime > currentTime) {
+    // 没有过期任务推入 timeQueue
     // This is a delayed task.
     newTask.sortIndex = startTime;
     push(timerQueue, newTask);
+    // 如果 taskQueue 中没有可执行的任务，而当前任务又是 timeQueue 中的第一个任务
     if (peek(taskQueue) === null && newTask === peek(timerQueue)) {
       // All tasks are delayed, and this is the task with the earliest delay.
       if (isHostTimeoutScheduled) {
@@ -355,10 +367,13 @@ function unstable_scheduleCallback(priorityLevel, callback, options) {
         isHostTimeoutScheduled = true;
       }
       // Schedule a timeout.
+      // 派发一个延时任务，延时任务用于检查当前任务是否过期
       requestHostTimeout(handleTimeout, startTime - currentTime);
     }
   } else {
+    // 当前时间大于 startTime 的情况，说明任务已过期
     newTask.sortIndex = expirationTime;
+    // 过期任务推入 taskQueue
     push(taskQueue, newTask);
     if (enableProfiling) {
       markTaskStart(newTask, currentTime);
@@ -368,6 +383,7 @@ function unstable_scheduleCallback(priorityLevel, callback, options) {
     // wait until the next time we yield.
     if (!isHostCallbackScheduled && !isPerformingWork) {
       isHostCallbackScheduled = true;
+      // 执行 taskQueue 中的任务
       requestHostCallback(flushWork);
     }
   }

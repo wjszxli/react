@@ -235,7 +235,10 @@ function processDispatchQueueItemsInOrder(
   inCapturePhase: boolean,
 ): void {
   let previousInstance;
+  console.log('dispatchListeners', dispatchListeners);
+  // 捕获
   if (inCapturePhase) {
+    // 逆序执行，相当于捕获
     for (let i = dispatchListeners.length - 1; i >= 0; i--) {
       const {instance, currentTarget, listener} = dispatchListeners[i];
       if (instance !== previousInstance && event.isPropagationStopped()) {
@@ -245,6 +248,8 @@ function processDispatchQueueItemsInOrder(
       previousInstance = instance;
     }
   } else {
+    // 冒泡
+    // 顺序执行，相当于冒泡
     for (let i = 0; i < dispatchListeners.length; i++) {
       const {instance, currentTarget, listener} = dispatchListeners[i];
       if (instance !== previousInstance && event.isPropagationStopped()) {
@@ -261,6 +266,8 @@ export function processDispatchQueue(
   eventSystemFlags: EventSystemFlags,
 ): void {
   const inCapturePhase = (eventSystemFlags & IS_CAPTURE_PHASE) !== 0;
+  console.log('dispatchQueue', dispatchQueue);
+  // 遍历dispatchQueue并调用processDispatchQueueItemsInOrder
   for (let i = 0; i < dispatchQueue.length; i++) {
     const {event, listeners} = dispatchQueue[i];
     processDispatchQueueItemsInOrder(event, listeners, inCapturePhase);
@@ -279,6 +286,7 @@ function dispatchEventsForPlugins(
 ): void {
   const nativeEventTarget = getEventTarget(nativeEvent);
   const dispatchQueue: DispatchQueue = [];
+  // 事件对象的合成，收集事件到执行路径上
   extractEvents(
     dispatchQueue,
     domEventName,
@@ -288,6 +296,11 @@ function dispatchEventsForPlugins(
     eventSystemFlags,
     targetContainer,
   );
+  // 执行收集到的组件中真正的事件
+  /**
+   * dispatchQueue是一个数组，每一项包含了一个合成事件及其该合成事件对应的回调函数（listeners），
+   * extractEvents负责合成事件并调用相关的方法来收集事件响应链路，processDispatchQueue负责执行事件的回调函数
+   * **/
   processDispatchQueue(dispatchQueue, eventSystemFlags);
 }
 
@@ -653,6 +666,7 @@ function createDispatchListener(
   };
 }
 
+// 收集事件响应链路
 export function accumulateSinglePhaseListeners(
   targetFiber: Fiber | null,
   reactName: string | null,
@@ -662,6 +676,7 @@ export function accumulateSinglePhaseListeners(
   nativeEvent: AnyNativeEvent,
 ): Array<DispatchListener> {
   const captureName = reactName !== null ? reactName + 'Capture' : null;
+  // 根据开始设定的事件监听阶段，设置不同的事件名，以 onClick 为例，reactName 是 onClick， captureName 是 onClickCapture
   const reactEventName = inCapturePhase ? captureName : reactName;
   let listeners: Array<DispatchListener> = [];
 
@@ -670,8 +685,10 @@ export function accumulateSinglePhaseListeners(
 
   // Accumulate all instances and listeners via the target -> root path.
   while (instance !== null) {
+    // fiber 节点对应的 dom 节点
     const {stateNode, tag} = instance;
     // Handle listeners that are on HostComponents (i.e. <div>)
+    // 只处理在 dom 节点上绑定的事件
     if (tag === HostComponent && stateNode !== null) {
       lastHostComponent = stateNode;
 
@@ -759,6 +776,7 @@ export function accumulateSinglePhaseListeners(
         listeners = [];
       }
     }
+    // 向上寻找
     instance = instance.return;
   }
   return listeners;

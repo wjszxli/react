@@ -282,7 +282,6 @@ export function updateContainer(
   }
   // 比较关键的入参，lane 表示优先级
   const lane = requestUpdateLane(current);
-  console.log('lane', lane)
 
   if (enableSchedulingProfiler) {
     markRenderScheduled(lane);

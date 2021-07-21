@@ -271,6 +271,7 @@ export function updateContainer(
     onScheduleRoot(container, element);
   }
   const current = container.current;
+  // event 相关入参，不必关注
   const eventTime = requestEventTime();
   if (__DEV__) {
     // $FlowExpectedError - jest isn't a global, and isn't recognized outside of tests
@@ -279,6 +280,7 @@ export function updateContainer(
       warnIfNotScopedWithMatchingAct(current);
     }
   }
+  // lane 表示优先级
   const lane = requestUpdateLane(current);
 
   if (enableSchedulingProfiler) {
@@ -312,8 +314,10 @@ export function updateContainer(
   const update = createUpdate(eventTime, lane);
   // Caution: React DevTools currently depends on this property
   // being called "element".
+  // update.payload 表示一个对应的 React 元素
   update.payload = {element};
 
+  // render 传入的 callback
   callback = callback === undefined ? null : callback;
   if (callback !== null) {
     if (__DEV__) {
@@ -328,12 +332,15 @@ export function updateContainer(
     update.callback = callback;
   }
 
+  // update 入队列
   enqueueUpdate(current, update, lane);
+  // 调度 fiberRoot
   const root = scheduleUpdateOnFiber(current, lane, eventTime);
   if (root !== null) {
     entangleTransitions(root, current, lane);
   }
 
+  // 返回节点的优先级
   return lane;
 }
 
